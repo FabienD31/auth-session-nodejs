@@ -3,9 +3,9 @@ const { app } = require('../app');
 const User = require('../database/models/user.model');
 
 const LocalStrategy = require('passport-local').Strategy;
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
+//const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
-const { findUserPerEmail } = require('../queries/user.queries');
+const { findUserPerEmail /*findUserPerGoogleId*/ } = require('../queries/user.queries');
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -41,12 +41,33 @@ passport.use('local', new LocalStrategy({ usernameField: 'email' }, async (email
   }
 }));
 
+/*
 //clientID et clientSecret sont à récuperer sur https://console.developers.google.com en ajoutant un projet et notre site
 passport.use('google', new GoogleStrategy({
   clientID: 'XXX',
   clientSecret: 'XXX',
   callbackURL: '/auth/google/cb' //correspond à la route mise sur le site dev de google
-}, (accessToken, refreshToken, profile, done) => {
-    console.log(profile);
-    done(null, false); 
+},  async (accessToken, refreshToken, profile, done) => {
+  try {
+    const user = await findUserPerGoogleId(profile.id);
+    if (user) {
+      done(null, user);
+    } else {
+      const newUser = new User({
+        username: profile.displayName,
+        local: {
+          googleId: profile.id,
+          email: profile.emails[0].value
+        }
+      })
+      const savedUser = await newUser.save();
+      done(null, savedUser);
+    }
+  } catch(e) {
+    done(e);
+  }
 }));
+*/
+
+
+
