@@ -26,3 +26,20 @@ exports.sessionDelete = (req, res, next) => {
   req.logout();
   res.redirect('/');
 }
+
+/*
+//connexion avec google
+
+exports.googleAuth = (req, res, next) => {
+  passport.authenticate('google', {
+    scope: ['email', 'profile']
+  })(req, res, next);
+}
+
+exports.googleAuthCb = (req, res, next) => {
+  passport.authenticate('google', {
+    successRedirect: '/protected',
+    failureRedirect: '/'
+  })(req, res, next);
+}
+*/

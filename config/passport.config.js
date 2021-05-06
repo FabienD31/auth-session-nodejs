@@ -1,7 +1,10 @@
 const passport = require('passport');
 const { app } = require('../app');
 const User = require('../database/models/user.model');
+
 const LocalStrategy = require('passport-local').Strategy;
+const GoogleStrategy = require('passport-google-oauth20').Strategy;
+
 const { findUserPerEmail } = require('../queries/user.queries');
 
 app.use(passport.initialize());
@@ -36,4 +39,14 @@ passport.use('local', new LocalStrategy({ usernameField: 'email' }, async (email
   } catch(e) {
     done(e);
   }
+}));
+
+//clientID et clientSecret sont à récuperer sur https://console.developers.google.com en ajoutant un projet et notre site
+passport.use('google', new GoogleStrategy({
+  clientID: 'XXX',
+  clientSecret: 'XXX',
+  callbackURL: '/auth/google/cb' //correspond à la route mise sur le site dev de google
+}, (accessToken, refreshToken, profile, done) => {
+    console.log(profile);
+    done(null, false); 
 }));
